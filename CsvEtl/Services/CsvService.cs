@@ -3,7 +3,6 @@ using CsvEtl.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Options;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -12,7 +11,6 @@ namespace CsvEtl.Services;
 
 /// <summary>
 /// Ansvarar BARA för CSV-operationer och fil I/O
-/// All din ursprungliga CSV-logik hamnar här
 /// </summary>
 public class CsvService : ICsvService
 {
@@ -34,7 +32,6 @@ public class CsvService : ICsvService
 
     /// <summary>
     /// Läser alla employees från CSV-fil
-    /// Detta ersätter din while-loop i original-koden
     /// </summary>
     public async Task<IEnumerable<EmployeeRaw>> ReadEmployeesAsync(string filePath)
     {
@@ -116,7 +113,6 @@ public class CsvService : ICsvService
 
     /// <summary>
     /// Skriver en employee till CSV-fil (append)
-    /// Detta ersätter din outCsv.WriteField() logik
     /// </summary>
     public async Task WriteEmployeeAsync(string filePath, EmployeeValid employee)
     {
@@ -147,7 +143,6 @@ public class CsvService : ICsvService
 
     /// <summary>
     /// Skriver en employee som JSON-line till JSONL-fil
-    /// Detta ersätter din JsonSerializer.Serialize() logik
     /// </summary>
     public async Task WriteJsonLineAsync(string filePath, EmployeeValid employee)
     {
@@ -171,7 +166,6 @@ public class CsvService : ICsvService
 
     /// <summary>
     /// Skriver fel-logg för en rejected employee
-    /// Detta ersätter din errorWriter.WriteLineAsync() logik
     /// </summary>
     public async Task WriteErrorLogAsync(string filePath, int rowNumber, EmployeeValidationResult validationResult)
     {

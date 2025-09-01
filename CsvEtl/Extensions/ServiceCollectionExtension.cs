@@ -12,7 +12,7 @@ namespace CsvEtl.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            // Bind "Etl" → EtlOptions och validera vid uppstart
+            // Bind "Etl" -> EtlOptions och validera vid uppstart
             services.AddOptions<EtlOptions>()
                 .Bind(configuration.GetSection("Etl"))
                 .Validate(o =>
@@ -21,7 +21,7 @@ namespace CsvEtl.Extensions
                 }, "EtlOptions validation failed")
                 .ValidateOnStart();
 
-            // Registrera övrigt
+            // Registrera resten
             services.AddScoped<IEmployeeProcessor, EmployeeProcessor>();
             services.AddScoped<ICsvService, CsvService>();
             services.AddScoped<EmployeeValidator>();
