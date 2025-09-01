@@ -1,1 +1,2 @@
-# dotnet-mini-csv-etl
+# Mini CSV ETL
+Read & write csv
