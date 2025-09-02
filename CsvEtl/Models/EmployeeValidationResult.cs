@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace CsvEtl.Models
 {
     /// <summary>
-    /// Resultat från validering av en enskild employee
-    /// Döpt till EmployeeValidationResult för att undvika naming conflicts
+    /// Result from validation of single unique employee
     /// </summary>
     public class EmployeeValidationResult
     {

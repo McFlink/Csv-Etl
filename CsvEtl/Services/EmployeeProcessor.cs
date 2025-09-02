@@ -6,8 +6,7 @@ using Microsoft.Extensions.Options;
 namespace CsvEtl.Services;
 
 /// <summary>
-/// Orkestrator - koordinerar alla andra tjänster
-/// Detta är din gamla Program.cs logik, bara uppdelad i metoder
+/// Orchestrator - Coordinates all other services
 /// </summary>
 public class EmployeeProcessor : IEmployeeProcessor
 {
@@ -31,27 +30,27 @@ public class EmployeeProcessor : IEmployeeProcessor
 
         try
         {
-            // 1. Parsa kommandoradsargument
+            // 1. Parse command line argument
             ParseCommandLineArgs(args);
 
-            // 2. Validera att input-filen finns
+            // 2. Validate input file exists
             if (!File.Exists(_options.InputPath))
             {
-                result.ErrorMessages.Add($"Hittar inte inputfil: {_options.InputPath}");
+                result.ErrorMessages.Add($"Cannot find input file: {_options.InputPath}");
                 return result;
             }
 
-            // 3. Förbered output-filer
+            // 3. Prepare output files
             await PrepareOutputFilesAsync();
 
-            // 4. Processa data (huvudlogiken)
-            await ProcessDataAsync(result);  // ← Nu skickar vi med result
+            // 4. Process data (main logic)
+            await ProcessDataAsync(result);  // Also send results
 
             return result;
         }
         catch (Exception ex)
         {
-            result.ErrorMessages.Add($"Oväntat fel: {ex.Message}");
+            result.ErrorMessages.Add($"Unexpected error: {ex.Message}");
             return result;
         }
     }
@@ -69,36 +68,36 @@ public class EmployeeProcessor : IEmployeeProcessor
 
     private async Task PrepareOutputFilesAsync()
     {
-        // Skapa mappar
+        // Create folders
         Directory.CreateDirectory(Path.GetDirectoryName(_options.OutputCsvPath)!);
         Directory.CreateDirectory(Path.GetDirectoryName(_options.OutputJsonl)!);
         Directory.CreateDirectory(Path.GetDirectoryName(_options.ErrorLogsPath)!);
 
-        // Rensa filer
+        // Clear files
         await File.WriteAllTextAsync(_options.OutputCsvPath, string.Empty);
         await File.WriteAllTextAsync(_options.OutputJsonl, string.Empty);
         await File.WriteAllTextAsync(_options.ErrorLogsPath, string.Empty);
 
-        // Skriv CSV-header
+        // Write CSV header
         await _csvService.WriteHeaderAsync(_options.OutputCsvPath);
     }
 
     private async Task ProcessDataAsync(ProcessingResult result)
     {
-        // Läs alla employees från input-filen
+        // Read all employees from input file
         var employees = await _csvService.ReadEmployeesAsync(_options.InputPath);
 
         foreach (var employee in employees)
         {
             result.TotalRecords++;
 
-            // Kolla om den ska filtreras bort pga --min-country
+            // Check if filtered away due to --min-country
             if (_validator.ShouldFilterOut(employee))
             {
-                continue; // Hoppa över utan att räkna som rejected
+                continue; // Skip without count as rejected
             }
 
-            // Validera
+            // Validate
             var validationResult = _validator.Validate(employee);
 
             if (!validationResult.IsValid)
@@ -108,7 +107,7 @@ public class EmployeeProcessor : IEmployeeProcessor
                 continue;
             }
 
-            // Transformera och skriv output
+            // Transform and write output
             var validEmployee = _validator.Transform(employee);
 
             await _csvService.WriteEmployeeAsync(_options.OutputCsvPath, validEmployee);

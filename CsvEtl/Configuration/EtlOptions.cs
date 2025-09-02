@@ -6,27 +6,27 @@
 /// </summary>
 public class EtlOptions
 {
-    // Filsökvägar - använd Path.Combine för OS-kompatibilitet
+    // Default paths (overwritten by config)
     public string InputPath { get; set; } = Path.Combine("input", "employees.csv");
     public string OutputCsvPath { get; set; } = Path.Combine("output", "employees_valid.csv");
     public string OutputJsonl { get; set; } = Path.Combine("output", "employees_valid.jsonl");
     public string ErrorLogsPath { get; set; } = Path.Combine("logs", "errors.txt");
 
-    // HashSet för effektiva lookups + case-insensitive jämförelse
+    // HashSet for lookups + case-insensitive comparison
     public HashSet<string> AllowedCountries { get; set; } = new(StringComparer.OrdinalIgnoreCase)
     {
         "SE", "NO", "DK", "FI"
     };
 
-    // Kommandoradsparametrar (sätts runtime)
+    // Command line parameter (set at runtime)
     public string? MinCountry { get; set; }
 
-    // Funktions-flaggor
+    // Function flags
     public bool RequireTopLevelDomainInEmail { get; set; } = true;
     public bool TrimFields { get; set; } = true;
     public bool IgnoreBadData { get; set; } = true;
 
-    // Validation method (optional men användbart)
+    // Validation method (optional but useful)
     public void Validate()
     {
         if (string.IsNullOrWhiteSpace(InputPath))

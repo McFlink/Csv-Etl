@@ -10,7 +10,7 @@ using System.Text.Json;
 namespace CsvEtl.Services;
 
 /// <summary>
-/// Ansvarar BARA för CSV-operationer och fil I/O
+/// Only responsible for csv operations and file I/O
 /// </summary>
 public class CsvService : ICsvService
 {
@@ -31,7 +31,7 @@ public class CsvService : ICsvService
     }
 
     /// <summary>
-    /// Läser alla employees från CSV-fil
+    /// Read all employees from csv file
     /// </summary>
     public async Task<IEnumerable<EmployeeRaw>> ReadEmployeesAsync(string filePath)
     {
@@ -41,16 +41,15 @@ public class CsvService : ICsvService
 
         try
         {
-            // Samma setup som din original-kod
             await using var inputStream = File.OpenRead(filePath);
             using var reader = new StreamReader(inputStream, Encoding.UTF8);
             using var csv = new CsvReader(reader, _csvConfig);
 
-            // Läs header
+            // Read header
             await csv.ReadAsync();
             csv.ReadHeader();
 
-            // Läs alla rader
+            // Read all rows
             while (await csv.ReadAsync())
             {
                 try
@@ -68,21 +67,21 @@ public class CsvService : ICsvService
                 }
                 catch (Exception ex)
                 {
-                    // Om en rad är korrupt, logga och fortsätt
-                    Console.WriteLine($"Varning: Kunde inte läsa rad {csv.Context.Parser.Row}: {ex.Message}");
+                    // If a row is corrupt, log and continue
+                    Console.WriteLine($"Warning: could not read row {csv.Context.Parser.Row}: {ex.Message}");
                 }
             }
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Fel vid läsning av CSV-fil '{filePath}': {ex.Message}", ex);
+            throw new InvalidOperationException($"Error while reading csv file '{filePath}': {ex.Message}", ex);
         }
 
         return employees;
     }
 
     /// <summary>
-    /// Skriver CSV-header till output-fil
+    /// Writes csv header to output file
     /// </summary>
     public async Task WriteHeaderAsync(string filePath)
     {
@@ -94,7 +93,6 @@ public class CsvService : ICsvService
             await using var writer = new StreamWriter(stream, new UTF8Encoding(false));
             using var csv = new CsvWriter(writer, _csvConfig);
 
-            // Samma headers som i din original-kod
             csv.WriteField("Id");
             csv.WriteField("FirstName");
             csv.WriteField("LastName");
@@ -112,7 +110,7 @@ public class CsvService : ICsvService
     }
 
     /// <summary>
-    /// Skriver en employee till CSV-fil (append)
+    /// Writes one employee to csv file
     /// </summary>
     public async Task WriteEmployeeAsync(string filePath, EmployeeValid employee)
     {
@@ -124,7 +122,7 @@ public class CsvService : ICsvService
             await using var writer = new StreamWriter(stream, new UTF8Encoding(false));
             using var csv = new CsvWriter(writer, _csvConfig);
 
-            // Samma ordning som header
+            // Same order as header
             csv.WriteField(employee.Id);
             csv.WriteField(employee.FirstName);
             csv.WriteField(employee.LastName);
@@ -137,12 +135,12 @@ public class CsvService : ICsvService
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Fel vid skrivning av employee till CSV '{filePath}': {ex.Message}", ex);
+            throw new InvalidOperationException($"Error while writing employee to csv file '{filePath}': {ex.Message}", ex);
         }
     }
 
     /// <summary>
-    /// Skriver en employee som JSON-line till JSONL-fil
+    /// Writes an employee as JSON-line to JSONL-file
     /// </summary>
     public async Task WriteJsonLineAsync(string filePath, EmployeeValid employee)
     {
@@ -153,19 +151,18 @@ public class CsvService : ICsvService
             await using var stream = File.Open(filePath, FileMode.Append, FileAccess.Write, FileShare.Read);
             await using var writer = new StreamWriter(stream, new UTF8Encoding(false));
 
-            // Samma serialisering som i original-koden
             var json = JsonSerializer.Serialize(employee, new JsonSerializerOptions { WriteIndented = false });
             await writer.WriteLineAsync(json);
             await writer.FlushAsync();
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Fel vid skrivning av JSON-line till '{filePath}': {ex.Message}", ex);
+            throw new InvalidOperationException($"Error writing JSON line to '{filePath}': {ex.Message}", ex);
         }
     }
 
     /// <summary>
-    /// Skriver fel-logg för en rejected employee
+    /// Writes error log för rejected employee
     /// </summary>
     public async Task WriteErrorLogAsync(string filePath, int rowNumber, EmployeeValidationResult validationResult)
     {
@@ -181,7 +178,7 @@ public class CsvService : ICsvService
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Fel vid skrivning av error-log till '{filePath}': {ex.Message}", ex);
+            throw new InvalidOperationException($"Error when writing error log to '{filePath}': {ex.Message}", ex);
         }
     }
 }

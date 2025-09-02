@@ -1,7 +1,7 @@
 ﻿namespace CsvEtl.Models;
 
 /// <summary>
-/// Returneras från ProcessAsync för att visa vad som hände
+/// Return from ProcessAsync to show outcome
 /// </summary>
 public class ProcessingResult
 {
@@ -11,7 +11,7 @@ public class ProcessingResult
     public List<string> ErrorMessages { get; set; } = new();
     public bool Success => ErrorMessages.Count == 0;
 
-    // Hjälpmetod för att skriva ut resultat
+    // Helper to print results
     public void PrintSummary()
     {
         Console.WriteLine($"Klar. Totalt lästa: {TotalRecords}, godkända: {AcceptedRecords}, avvisade: {RejectedRecords}");

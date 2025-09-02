@@ -3,7 +3,7 @@
 namespace CsvEtl.Services
 {
     /// <summary>
-    /// Huvudansvar: Orchestrerar hela processen från A till Ö
+    /// Main responsibility: Orchesters whole process from A to Z
     /// </summary>
     public interface IEmployeeProcessor
     {

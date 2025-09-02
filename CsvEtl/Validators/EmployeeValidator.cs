@@ -6,8 +6,8 @@ using Microsoft.Extensions.Options;
 namespace CsvEtl.Validators;
 
 // <summary>
-/// Ansvar: BARA validering av employee-data
-/// Ingen I/O, inga side effects - bara ren validering
+/// Responsibility: ONLY validation of employee data
+/// No file I/O, no side effect, just pure validation
 /// </summary>
 public class EmployeeValidator
 {
@@ -21,27 +21,25 @@ public class EmployeeValidator
     }
 
     /// <summary>
-    /// Validerar en employee-record och returnerar alla fel som hittas
+    /// Validates an employee record and returns all errors found
     /// </summary>
-    /// <param name="employee">Employee att validera</param>
-    /// <returns>EmployeeValidationResult med fel (tom lista = giltig)</returns>
+    /// <param name="employee">Employee to validate</param>
+    /// <returns>EmployeeValidationResult with errors (empty list = valid)</returns>
     public EmployeeValidationResult Validate(EmployeeRaw employee)
     {
         var errors = new List<string>();
 
-        // Validera FirstName
+        // Validate fields
         if (string.IsNullOrWhiteSpace(employee.FirstName))
         {
             errors.Add("FirstName saknas");
         }
 
-        // Validera LastName
         if (string.IsNullOrWhiteSpace(employee.LastName))
         {
             errors.Add("LastName saknas");
         }
 
-        // Validera Email
         if (string.IsNullOrWhiteSpace(employee.Email))
         {
             errors.Add("Email saknas");
@@ -51,7 +49,6 @@ public class EmployeeValidator
             errors.Add("Email har ogiltigt format");
         }
 
-        // Validera Country
         if (string.IsNullOrWhiteSpace(employee.Country))
         {
             errors.Add("Country saknas");
@@ -70,25 +67,25 @@ public class EmployeeValidator
     }
 
     /// <summary>
-    /// Kontrollerar om employee ska filtreras bort baserat på --min-country
+    /// Check if employee should be filtered based on --min-country
     /// </summary>
-    /// <param name="employee">Employee att kontrollera</param>
-    /// <returns>true om den ska filtreras bort, false om den ska behållas</returns>
+    /// <param name="employee">Employee to check</param>
+    /// <returns>true if filtered away, false if it's a keeper</returns>
     public bool ShouldFilterOut(EmployeeRaw employee)
     {
         if (string.IsNullOrWhiteSpace(_options.MinCountry))
         {
-            return false; // Ingen filtrering
+            return false; // No filtering
         }
 
         return !string.Equals(employee.Country, _options.MinCountry, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
-    /// Transformerar en giltig EmployeeRaw till EmployeeValid
+    /// Transforms a valid EmployeeRaw to EmployeeValid
     /// </summary>
-    /// <param name="raw">Den validerade raw employee</param>
-    /// <returns>Transformerad employee</returns>
+    /// <param name="raw">The validated raw employee</param>
+    /// <returns>Transformed employee</returns>
     public EmployeeValid Transform(EmployeeRaw raw)
     {
         return new EmployeeValid
@@ -96,9 +93,9 @@ public class EmployeeValidator
             Id = raw.Id,
             FirstName = raw.FirstName,
             LastName = raw.LastName,
-            Email = raw.Email.ToLowerInvariant(),           // Normalisera email
-            Country = raw.Country.ToUpperInvariant(),        // Normalisera land
-            FullName = $"{raw.LastName}, {raw.FirstName}"    // Skapa fullname
+            Email = raw.Email.ToLowerInvariant(),           // Normalize email
+            Country = raw.Country.ToUpperInvariant(),        // Normalize country
+            FullName = $"{raw.LastName}, {raw.FirstName}"    // Create fullname
         };
     }
 }

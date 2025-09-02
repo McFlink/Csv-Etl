@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CsvEtl.Services
 {
     /// <summary>
-    /// Ansvar: Allt som har med CSV att göra - läsa, skriva, konfigurera
+    /// Responsibility: Everything related to csv - read, write, configure
     /// </summary>
     public interface ICsvService
     {
